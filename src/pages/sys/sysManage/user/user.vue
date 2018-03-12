@@ -25,7 +25,7 @@
         <mu-dialog :open="openRole" title="分配角色" @close="openRole = false" bodyClass="role-dia-log">
             <mu-list>
                 <mu-list-item v-for="item in roleList.content" :key="item.roleId" :title="item.remark">
-                    <mu-radio :value="roleId" :nativeValue="item.roleId" name="roleId" class="demo-radio" @change="changeRadio(item.roleId)" slot="left"/>
+                    <mu-radio :value="roleId" :nativeValue="item.roleId + ''" name="roleId" class="demo-radio" @change="changeRadio(item.roleId)" slot="left"/>
                 </mu-list-item>
             </mu-list>
             <mu-flat-button slot="actions" @click="openRole = false" primary label="取消" />

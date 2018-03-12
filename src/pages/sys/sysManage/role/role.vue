@@ -4,6 +4,22 @@
         <!-- <Modal v-model="openPower" title="选择权限菜单" @on-ok="saveSysMenu">
                 <Tree :data="sysMenuList" show-checkbox ref="tree"></Tree>
             </Modal> -->
+        <mu-dialog v-if="open.isShowDetail" :open="open.isShowDetail" title="详情" @close="open.isShowDetail = false" bodyClass="role-dia-log">
+            <mu-list>
+                <mu-list-item>
+                   姓名： {{showDetailData.roleName}}
+                </mu-list-item>
+                
+                <mu-list-item>
+                   类型： {{showDetailData.remark}}
+                </mu-list-item>
+                <mu-list-item>
+                   创建时间： {{showDetailData.createTime}}
+                </mu-list-item>
+            </mu-list>
+            <mu-flat-button slot="actions" @click="open.isShowDetail = false" primary label="取消" />
+            <mu-flat-button slot="actions" @click="open.isShowDetail" primary label="确定" />
+        </mu-dialog>
         <mu-dialog :open="openPower" title="用户权限" toggleNested @close="openPower = false" bodyClass="power-dia-log">
             <mu-list>
                 <mu-list-item v-for="item in sysMenuList" :key="item.menuId" :title="item.name" toggleNested>
@@ -19,7 +35,8 @@
         <div class="add-role-btn">
             <mu-raised-button  @click="addRole" label="添加角色" primary />
         </div>
-        <Table class="station-table" border :columns="columns" :data="roleList.content"></Table>
+        <Table v-if="isMobile" class="station-table" border :columns="columnsMobile" :data="roleList.content"></Table>
+        <Table v-else class="station-table" border :columns="columns" :data="roleList.content"></Table>
         <!-- <mu-pagination class="stationPage" :total="stationList.totalElements" :current="stationList.number + 1" @pageChange="pageChange"></mu-pagination> -->
     </div>
 </template>
@@ -37,7 +54,8 @@
                 open: {
                     isAdd: false,
                     isEdit: false,
-                    isRemove: false
+                    isRemove: false,
+                    isShowDetail: false
                 },
                 fun: {
                     addClick: this.addRoleClick,
@@ -52,7 +70,8 @@
                     inputArr: JSON.stringify([{
                         name: '名字',
                         value: 'zhName'
-                    }])
+                    }]),
+                    showDetailData: {}      // 移动端查看详情数据
                 },
                 columns: [{
                         title: '名字',
@@ -120,6 +139,86 @@
                             ])
                         }
                     }
+                ],
+                columnsMobile: [{
+                        title: '名字',
+                        key: 'roleName'
+                    },
+                    {
+                        title: "操作",
+                        key: "action",
+                        width: "70%",
+                        align: "center",
+                        render: (h, params) => {
+                            return h("div", [
+                                h(
+                                    "Button", {
+                                        props: {
+                                            type: "primary",
+                                            size: "small"
+                                        },
+                                        style: {
+                                            marginRight: "5px"
+                                        },
+                                        on: {
+                                            click: () => {
+                                                this.editRole(params.row)
+                                            }
+                                        }
+                                    },
+                                    "修改"
+                                ),
+                                h(
+                                    "Button", {
+                                        props: {
+                                            type: "success",
+                                            size: "small"
+                                        },
+                                        style: {
+                                            marginRight: "5px"
+                                        },
+                                        on: {
+                                            click: () => {
+                                                this.powerManage(params.row)
+                                            }
+                                        }
+                                    },
+                                    "权限管理"
+                                ),
+                                h(
+                                    "Button", {
+                                        props: {
+                                            type: "error",
+                                            size: "small"
+                                        },
+                                        style: {
+                                            marginRight: "5px"
+                                        },
+                                        on: {
+                                            click: () => {
+                                                this.removeRole(params.row)
+                                            }
+                                        }
+                                    },
+                                    "删除"
+                                ),
+                                h(
+                                    "Button", {
+                                        props: {
+                                            type: "error",
+                                            size: "small"
+                                        },
+                                        on: {
+                                            click: () => {
+                                                this.showDetail(params.row)
+                                            }
+                                        }
+                                    },
+                                    "详情"
+                                )
+                            ])
+                        }
+                    }
                 ]
             }
         },
@@ -127,7 +226,8 @@
             ...mapGetters({
                 roleList: 'roleList',
                 sysMenuList: 'sysMenuList',
-                checkedMenuIds: 'checkedMenuIds'
+                checkedMenuIds: 'checkedMenuIds',
+                isMobile: "isMobile"
             })
         },
         created () {
@@ -215,6 +315,13 @@
             },
             onInputChange (res) {
                 this.state = res
+            },
+
+            // 移动端查看详情
+            showDetail (res) {
+                this.open.isShowDetail = true
+                this.showDetailData = res
+                console.log(res)
             }
         },
         mounted () {
