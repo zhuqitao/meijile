@@ -1,15 +1,38 @@
 <template>
     <div class="menuManage">
+        <!-- 移动端查看详情 -->
+        <mu-dialog v-if="isShowDetail" :open="isShowDetail" title="详情" @close="isShowDetail = false" bodyClass="role-dia-log">
+            <mu-list>
+                <mu-list-item>
+                   姓名： {{showDetailData.username}}
+                </mu-list-item>
+                <mu-list-item>
+                   角色： {{showDetailData.roles[0].roleName}}
+                </mu-list-item>
+                <mu-list-item>
+                   电话： {{showDetailData.mobile}}
+                </mu-list-item>
+                <mu-list-item>
+                   密码： {{showDetailData.password}}
+                </mu-list-item>
+                <mu-list-item>
+                   创建时间： {{showDetailData.createTime}}
+                </mu-list-item>
+            </mu-list>
+            <mu-flat-button slot="actions" @click="isShowDetail = false" primary label="取消" />
+            <mu-flat-button slot="actions" @click="editUserRole" primary label="确定" />
+        </mu-dialog>
         <mu-dialog :open="openRole" title="分配角色" @close="openRole = false" bodyClass="role-dia-log">
             <mu-list>
                 <mu-list-item v-for="item in roleList.content" :key="item.roleId" :title="item.remark">
-                    <mu-radio :value="item.releId === 1" name="roleId" class="demo-radio" @change="changeRadio(item.roleId)" slot="left"/>
+                    <mu-radio :value="roleId" :nativeValue="item.roleId" name="roleId" class="demo-radio" @change="changeRadio(item.roleId)" slot="left"/>
                 </mu-list-item>
             </mu-list>
             <mu-flat-button slot="actions" @click="openRole = false" primary label="取消" />
             <mu-flat-button slot="actions" @click="editUserRole" primary label="确定" />
         </mu-dialog>
-        <Table class="station-table" border :columns="columns" :data="userList.content"></Table>
+        <Table v-if="isMobile" class="station-table" border :columns="columnsMobile" :data="userList.content"></Table>
+        <Table v-else class="station-table" border :columns="columns" :data="userList.content"></Table>
         <mu-pagination class="stationPage" :total="userList.totalElements" :current="userList.number + 1" @pageChange="pageChange"></mu-pagination>
     </div>
 </template>
@@ -23,7 +46,9 @@
         data () {
             return {
                 aaa: true,
-                openRole: false,
+                openRole: false,      // 修改角色
+                isShowDetail: false,  // 打开详情
+                showDetailData: {},       // 详情数据
                 roleId: '',
                 userId: '',
                 columns: [{
@@ -94,13 +119,72 @@
                             ])
                         }
                     }
+                ],
+                columnsMobile: [{
+                        title: '名字',
+                        key: 'username'
+                    },
+                    {
+                        title: "操作",
+                        key: "action",
+                        width: "70%",
+                        align: "center",
+                        render: (h, params) => {
+                            return h("div", [
+                                h(
+                                    "Button", {
+                                        props: {
+                                            type: "primary",
+                                            size: "small"
+                                        },
+                                        style: {
+                                            marginRight: "5px"
+                                        },
+                                        on: {
+                                            click: () => {
+                                                this.editRole(params.row)
+                                            }
+                                        }
+                                    },
+                                    "修改角色"
+                                ),
+                                h(
+                                    "Button", {
+                                        props: {
+                                            type: "error",
+                                            size: "small"
+                                        },
+                                        style: {
+                                            marginRight: "5px"
+                                        }
+                                    },
+                                    "删除"
+                                ),
+                                h(
+                                    "Button", {
+                                        props: {
+                                            type: "error",
+                                            size: "small"
+                                        },
+                                        on: {
+                                            click: () => {
+                                                this.showDetail(params.row)
+                                            }
+                                        }
+                                    },
+                                    "详情"
+                                )
+                            ])
+                        }
+                    }
                 ]
             }
         },
         computed: {
             ...mapGetters({
                 userList: 'userList',
-                roleList: 'roleList'
+                roleList: 'roleList',
+                isMobile: "isMobile"
             })
         },
         created () {
@@ -119,8 +203,8 @@
             },
             editRole (params) {
                 this.openRole = true
-                this.userId = params.userId
-                this.roleId = params.roles[0].roleId
+                this.userId = params.userId + ''
+                this.roleId = params.roles[0].roleId + ''
             },
             editUserRole () {
                 this.openRole = false
@@ -144,6 +228,11 @@
                     page: pageNumber - 1,
                     size: 10
                 })
+            },
+            // 查看详情
+            showDetail (row) {
+                this.isShowDetail = true
+                this.showDetailData = row
             }
         },
         mounted () {
