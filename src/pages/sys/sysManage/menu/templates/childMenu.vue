@@ -1,7 +1,27 @@
 <template>
     <div class="child-menu">
         <dia-log :open="open" :data="state" :cb="fun" @onInputChange="onInputChange"></dia-log>
-        <Table border :columns="columns" :data="allChildMenuList"></Table>
+
+        <mu-dialog v-if="open.isShowDetail" :open="open.isShowDetail" title="详情" @close="open.isShowDetail = false" bodyClass="role-dia-log">
+            <mu-list>
+                <mu-list-item>
+                   菜单名字： {{showDetailData.name}}
+                </mu-list-item>
+                <mu-list-item>
+                   菜单类型： {{showDetailData.type}}
+                </mu-list-item>
+                <mu-list-item>
+                   颜色： {{showDetailData.colour}}
+                </mu-list-item>
+                <mu-list-item>
+                   图标： {{showDetailData.icon}}
+                </mu-list-item>
+                
+            </mu-list>
+            <mu-flat-button slot="actions" @click="open.isShowDetail = false" primary label="确定" />
+        </mu-dialog>
+        <Table v-if="isMobile" border :columns="columnsMobile" :data="allChildMenuList"></Table>
+        <Table v-else border :columns="columns" :data="allChildMenuList"></Table>
     </div>
 </template>
 <script>
@@ -14,12 +34,14 @@ export default {
             open: {
                 isAdd: false,
                 isEdit: false,
-                isRemove: false
+                isRemove: false,
+                isShowDetail: false
             },
             fun: {
                 editClick: this.editChildMenuClick,
                 removeClick: this.removeChildMenuClick
             },
+            showDetailData: {}, // 移动端详情数据
             state: {
                 zhName: '', // 菜单中文名字
                 url: '', // 菜单链接
@@ -102,6 +124,77 @@ export default {
                         ])
                     }
                 }
+            ],
+            columnsMobile: [
+                {
+                    title: '',
+                    width: 50
+                },
+                {
+                    title: '名字',
+                    key: 'name'
+                },
+                {
+                    title: "操作",
+                    key: "action",
+                    width: "60%",
+                    align: "center",
+                    render: (h, params) => {
+                        return h("div", [
+                            h(
+                                "Button", {
+                                    props: {
+                                        type: "primary",
+                                        size: "small"
+                                    },
+                                    style: {
+                                        marginRight: "5px"
+                                    },
+                                    on: {
+                                        click: () => {
+                                            this.editChildMenu(params.row)
+                                        }
+                                    }
+                                },
+                                "修改"
+                            ),
+                            h(
+                                "Button", {
+                                    props: {
+                                        type: "error",
+                                        size: "small"
+                                    },
+                                    style: {
+                                        marginRight: "5px"
+                                    },
+                                    on: {
+                                        click: () => {
+                                            this.removeChildMenu(params.row)
+                                        }
+                                    }
+                                },
+                                "删除"
+                            ),
+                            h(
+                                "Button", {
+                                    props: {
+                                        type: "error",
+                                        size: "small"
+                                    },
+                                    style: {
+                                        marginRight: "5px"
+                                    },
+                                    on: {
+                                        click: () => {
+                                            this.showDetail(params.row)
+                                        }
+                                    }
+                                },
+                                "详情"
+                            )
+                        ])
+                    }
+                }
             ]
         }
     },
@@ -111,7 +204,8 @@ export default {
     //     id: []
     // },
     computed: mapGetters({
-        allChildMenuList: 'allChildMenuList'
+        allChildMenuList: 'allChildMenuList',
+        isMobile: "isMobile"
     }),
     created () {
         // console.log(this.childMenu)
@@ -159,6 +253,11 @@ export default {
         },
         onInputChange (res) {
             this.state = res
+        },
+        // 显示详情
+        showDetail (row) {
+            this.open.isShowDetail = true
+            this.showDetailData = row
         }
     },
     components: {

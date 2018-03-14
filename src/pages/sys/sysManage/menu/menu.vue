@@ -1,10 +1,31 @@
 <template>
     <div class="menuManage">
         <dia-log :open="open" :data="state" :cb="fun" @onInputChange="onInputChange"></dia-log>
+
+        <mu-dialog v-if="open.isShowDetail" :open="open.isShowDetail" title="详情" @close="open.isShowDetail = false" bodyClass="role-dia-log">
+            <mu-list>
+                <mu-list-item>
+                   菜单名字： {{showDetailData.name}}
+                </mu-list-item>
+                <mu-list-item>
+                   菜单类型： {{showDetailData.type}}
+                </mu-list-item>
+                <mu-list-item>
+                   颜色： {{showDetailData.colour}}
+                </mu-list-item>
+                <mu-list-item>
+                   图标： {{showDetailData.icon}}
+                </mu-list-item>
+                
+            </mu-list>
+            <mu-flat-button slot="actions" @click="open.isShowDetail = false" primary label="确定" />
+        </mu-dialog>
         <div class="add-menu-btn">
             <mu-raised-button @click="addMainMenu" :label="'添加'+state.name" primary />
         </div>
-        <Table class="station-table" border :columns="columns" :data="allMainMenuList" @on-expand="tableExpand"></Table>
+
+        <Table v-if="isMobile" class="station-table" border :columns="columnsMobile" :data="allMainMenuList" @on-expand="tableExpand"></Table>
+        <Table v-else class="station-table" border :columns="columns" :data="allMainMenuList" @on-expand="tableExpand"></Table>
         <!-- <mu-pagination class="stationPage" :total="stationList.totalElements" :current="stationList.number + 1" @pageChange="pageChange"></mu-pagination> -->
     </div>
 </template>
@@ -23,13 +44,15 @@
                 open: {
                     isAdd: false,
                     isEdit: false,
-                    isRemove: false
+                    isRemove: false,
+                    isShowDetail: false
                 },
                 fun: {
                     addClick: this.addMenuClick,
                     editClick: this.editMainMenuClick,
                     removeClick: this.removeMainMenuClick
                 },
+                showDetailData: {}, // 显示详情数据
                 state: {
                     zhName: '', // 菜单中文名字
                     url: '', // 菜单链接
@@ -145,13 +168,115 @@
                             ])
                         }
                     }
+                ],
+                columnsMobile: [
+                    {
+                        type: 'expand',
+                        width: 50,
+                        render: (h, params) => {
+                            return h('transition',
+                            {
+                                attrs: {
+                                    name: 'childmenu'
+                                }
+                            },
+                            [
+                                h(childMenu,
+                                {
+                                    props: {
+                                        parentId: params.row.menuId
+                                    }
+                                })
+                            ])
+                        }
+                    },
+                    {
+                        title: '名字',
+                        key: 'name'
+                    },
+                    {
+                        title: "操作",
+                        key: "action",
+                        width: "60%",
+                        align: "center",
+                        render: (h, params) => {
+                            return h("div", [
+                                h(
+                                    "Button", {
+                                        props: {
+                                            type: "success",
+                                            size: "small"
+                                        },
+                                        style: {
+                                            margin: "5px"
+                                        },
+                                        on: {
+                                            click: () => {
+                                                this.addChildMuban(params.row)
+                                            }
+                                        }
+                                    },
+                                    "添加子菜单"
+                                ),
+                                h(
+                                    "Button", {
+                                        props: {
+                                            type: "primary",
+                                            size: "small"
+                                        },
+                                        style: {
+                                            margin: "5px"
+                                        },
+                                        on: {
+                                            click: () => {
+                                                this.editMainMenu(params.row)
+                                            }
+                                        }
+                                    },
+                                    "修改"
+                                ),
+                                h(
+                                    "Button", {
+                                        props: {
+                                            type: "error",
+                                            size: "small"
+                                        },
+                                        style: {
+                                            margin: "5px"
+                                        },
+                                        on: {
+                                            click: () => {
+                                                this.removeMainMenu(params.row)
+                                            }
+                                        }
+                                    },
+                                    "删除"
+                                ),
+                                h(
+                                    "Button", {
+                                        props: {
+                                            type: "error",
+                                            size: "small"
+                                        },
+                                        on: {
+                                            click: () => {
+                                                this.showDetail(params.row)
+                                            }
+                                        }
+                                    },
+                                    "详情"
+                                )
+                            ])
+                        }
+                    }
                 ]
                 // stationData: this.stationList
             }
         },
         computed: mapGetters({
             allMainMenuList: "allMainMenuList", // 站点数据 包括站点列表和分页信息
-            allChildMenuList: "allChildMenuList"
+            allChildMenuList: "allChildMenuList",
+            isMobile: "isMobile"
         }),
         created () {
             this.getAllMainMenuList()
@@ -234,6 +359,10 @@
             },
             onInputChange (res) {
                 this.state = res
+            },
+            showDetail (row) {
+                this.open.isShowDetail = true
+                this.showDetailData = row
             }
         },
         components: {

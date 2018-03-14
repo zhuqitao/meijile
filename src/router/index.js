@@ -13,10 +13,11 @@ const Role = () => import('../pages/sys/sysManage/role/role.vue')
 const Menu = () => import('../pages/sys/sysManage/menu/menu.vue')
 const User = () => import('../pages/sys/sysManage/user/user.vue')
 const Log = () => import('../pages/sys/sysManage/log/log.vue')
-const Muban = () => import('../pages/sys/sysManage/mubanManage/mubanManage.vue')
-const Sign = () => import('../pages/sys/sysManage/sign/sign.vue')
-// 站点管
+
+// 站点管理
 const Station = () => import('../pages/sys/stationManage/station/station.vue')
+const Muban = () => import('../pages/sys/stationManage/mubanManage/mubanManage.vue')
+const Sign = () => import('../pages/sys/stationManage/sign/sign.vue')
 // const addStation = () => import(/* webpackChunkName: Station */ '../pages/station/addStation/addStation')
 
 // 首页入口
@@ -87,6 +88,15 @@ const router = new Router({
                                 mainUrl: 'user'
                             }
                         },
+                        // 站点管理
+                        {
+                            path: 'station', // 站点管理
+                            name: 'station',
+                            component: Station,
+                            meta: {
+                                mainUrl: 'station'
+                            }
+                        },
                         {
                             path: 'template', // 模板管理
                             name: 'template',
@@ -103,23 +113,6 @@ const router = new Router({
                                 mainUrl: 'station'
                             }
                         },
-                        // 站点管理
-                        {
-                            path: 'station', // 站点管理
-                            name: 'station',
-                            component: Station,
-                            meta: {
-                                mainUrl: 'station'
-                            }
-                        },
-                        // {
-                        //     path: 'content', // 内容管理
-                        //     name: 'content',
-                        //     component: Official,
-                        //     meta: {
-                        //         mainUrl: 'station'
-                        //     }
-                        // },
                         {
                             path: 'flow',
                             name: 'flow',

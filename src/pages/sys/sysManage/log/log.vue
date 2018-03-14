@@ -1,5 +1,29 @@
 <template>
     <div>
+
+        <mu-dialog v-if="isShowDetail" :open="isShowDetail" title="详情" @close="isShowDetail = false" bodyClass="role-dia-log">
+            <mu-list>
+                <mu-list-item>
+                   创建时间： {{showDetailData.createDate}}
+                </mu-list-item>
+                <mu-list-item>
+                   IP: {{showDetailData.ip}}
+                </mu-list-item>
+                <mu-list-item>
+                   请求方式： {{showDetailData.method}}
+                </mu-list-item>
+                <mu-list-item>
+                   请求参数： {{showDetailData.params}}
+                </mu-list-item>
+                <mu-list-item>
+                   耗时： {{showDetailData.spendTime}}
+                </mu-list-item>
+                <mu-list-item>
+                   用户名字： {{showDetailData.userName}}
+                </mu-list-item>
+            </mu-list>
+            <mu-flat-button slot="actions" @click="isShowDetail = false" primary label="确定" />
+        </mu-dialog>
         <div>
             <label>开始时间：</label>
             <mu-date-picker container="inline" hintText="请选择时间" v-model="startTime"/>
@@ -12,7 +36,8 @@
 
             <mu-raised-button label="查询" @click="queryLog" class="demo-raised-button" primary/>
         </div>
-        <Table border :columns="columns" :data="logList.content"></Table>
+        <Table v-if="isMobile" border :columns="columnsMobile" :data="logList.content"></Table>
+        <Table v-else border :columns="columns" :data="logList.content"></Table>
         <mu-pagination class="stationPage" :total="logList.totalElements" :current="logList.number + 1" @pageChange="pageChange"></mu-pagination>
     </div>
 </template>
@@ -27,6 +52,8 @@ export default {
             spendTime: '',
             IP: '',
             // IPSource: [],
+            isShowDetail: false, // 是否显示详情
+            showDetailData: {},  // 详情数据
             columns: [
                 {
                     title: '创建时间',
@@ -52,12 +79,47 @@ export default {
                     title: '用户名字',
                     key: 'userName'
                 }
+            ],
+            columnsMobile: [
+                {
+                    title: 'IP',
+                    key: 'ip'
+                },
+                {
+                    title: '用户名字',
+                    key: 'userName'
+                },
+                {
+                    title: "操作",
+                    key: "action",
+                    width: "30%",
+                    align: "center",
+                    render: (h, params) => {
+                        return h("div", [
+                            h(
+                                "Button", {
+                                    props: {
+                                        type: "error",
+                                        size: "small"
+                                    },
+                                    on: {
+                                        click: () => {
+                                            this.showDetail(params.row)
+                                        }
+                                    }
+                                },
+                                "详情"
+                            )
+                        ])
+                    }
+                }
             ]
         }
     },
     computed: mapGetters({
         logList: 'logList',
-        IPSource: 'IPSource'
+        IPSource: 'IPSource',
+        isMobile: 'isMobile'
     }),
     created () {
         this.$store.dispatch('getLogList', {
@@ -85,6 +147,10 @@ export default {
         },
         queryIPChange: function () {
             //
+        },
+        showDetail (row) {
+            this.isShowDetail = true
+            this.showDetailData = row
         }
     }
 }
