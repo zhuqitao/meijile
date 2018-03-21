@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
+import store from '../vuex/index'
 
 // 项目入口
 const App = () => import('../App.vue')
@@ -52,7 +53,8 @@ const router = new Router({
                     path: 'sysIndex',
                     component: sysIndex,
                     meta: {
-                        mainUrl: 'user'
+                        mainUrl: 'user',
+                        auth: true
                     },
                     children: [
                         // 系统管理
@@ -133,11 +135,24 @@ const router = new Router({
     ]
 })
 router.beforeEach((to, from, next) => {
+    console.log(store)
     router.app.$options.store.dispatch('loading', true)
     // setTimeout(function () {
     //     next()
     // }, 1000)
-    next()
+    if (to.matched.some(m => m.meta.auth)) {
+        console.log('auth')
+        console.log(store.getters.isLogin)
+        if (router.app.$options.store.getters.isLogin) {
+            console.log('isLogin')
+            next()
+        } else {
+            console.log('notLogin')
+            next({path: '/'})
+        }
+    } else {
+        next()
+    }
 })
 router.afterEach((to, from) => {
     router.app.$options.store.dispatch('loading', false)
