@@ -9,10 +9,12 @@
         .logo
             display: flex;
             align-items: center;
-            font-size: 30px;
+            font-size: 1rem;
             color: #fff;
             margin-left: 50px;
             text-shadow: 0 0 10px #9B00EC,0 0 10px #9B00EC;
+            @media (max-width: 760px)
+                margin-left: 10px;
             img
                 height: 20px;
                 margin-left: 10px;
@@ -21,7 +23,7 @@
             display: flex;
             align-items: center;
             .login-info,.mould-manage
-                margin-right: 30px;
+                margin-right: 10px;
                 border-radius: 100px;
     .scroll
         .scroll-item
@@ -30,33 +32,46 @@
             background-size: 100% 100%;
             display: flex;
             align-items: center;
+            @media (max-width: 760px)
+                height: 200px;
+                width: 100%;
+                display: flex;
+                align-items: center;
             img
                 margin-left: 100px;
+                @media (max-width: 760px)
+                    margin-left: 10%;
+                    width: 80%;
     .type
         display: flex;
         align-items: center;
         height: 80px;
         background-color: #fff;
-        padding-left: 30px;
+        padding-left: 0px;
         .type-bar
             background-color: #fff;
             width: 500px;
+            @media (max-width: 760px)
+                width: 100%;
+                display: flex;
             .mu-tab-text
                 color: #000;
     .content
         display: flex;
         flex-wrap: wrap;
-        width: 47rem;
+        width: 100%;
         margin: auto;
         .mould-item
-            width: 11rem;
-            height: 12.2rem;
-            margin: 0.37rem;
+            width: 24%;
+            margin: 0.5%;
             border: solid 1px #ddd;
             background-color: #fff;
             box-shadow: 0 0 1px #ddd;
             text-align: left;
             transition: 0.3s;
+            @media (max-width: 760px)
+                width: 96%;
+                margin: 2%;
             &:hover
                 transform: translateY(-5px);
             .mu-card

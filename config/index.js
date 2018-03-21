@@ -12,7 +12,7 @@ module.exports = {
     assetsPublicPath: '/',
     proxyTable: {
         '/api/*': {
-        target: 'http://101.200.54.33/',
+        target: 'https://www.meijile.xin/',
         changeOrigin: true,
         secure: false
         }

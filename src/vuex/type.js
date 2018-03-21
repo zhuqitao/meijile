@@ -4,6 +4,7 @@ export const BASE_IS_MOBILE = 'BASE_IS_MOBILE'
 // login
 export const TO_LOGIN = 'TO_LOGIN' // 登录操作
 export const SET_TOKEN_NAME = 'SET_TOKEN_NAME' // 设置token
+export const SET_ISLOGIN = 'SET_ISLOGIN' // 设置登录状态
 
 // register
 export const GET_SMSCODE = 'GET_SMSCODE' // 获取验证码

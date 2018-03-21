@@ -8,28 +8,29 @@
 <script>
 export default {
     name: 'app',
-    sockets: {
-        connect: function () {
-            console.log('socket connected')
-        },
-        customEmit: function (val) {
-            console.log(val)
-            // console.log('this method was fired by the socket server. eg: io.emit("customEmit", data)')
-        },
-        messageevent: function (messageevent) {
-            console.log(messageevent)
-        }
-    },
+    // sockets: {
+    //     connect: function () {
+    //         console.log('socket connected')
+    //     },
+    //     customEmit: function (val) {
+    //         console.log(val)
+    //         // console.log('this method was fired by the socket server. eg: io.emit("customEmit", data)')
+    //     },
+    //     messageevent: function (messageevent) {
+    //         console.log(messageevent)
+    //     }
+    // },
     created: function () {
-        this.$socket.emit('messageevent', 23764)
+        // this.$socket.emit('messageevent', 23764)
         let userAgentInfo = navigator.userAgent
         let Agents = ['Android', 'iPhone', 'SymbianOS', 'Windows Phone', 'iPad', 'iPod']
         for (let i = 0; i < userAgentInfo.length; i++) {
             if (userAgentInfo.indexOf(Agents[i]) > 0) {
-                return this.$store.dispatch('getIsMobile', true)
+                this.$store.dispatch('setIsMobile', true)
             }
         }
         this.$store.dispatch('getLoginInfoFromLocal')
+        this.$store.dispatch('checkToken')
     }
 }
 </script>

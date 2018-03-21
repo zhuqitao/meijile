@@ -27,7 +27,7 @@ import VueSocketio from 'vue-socket.io'
 Vue.use(MuseUI)
 Vue.use(iView)
 // socket
-Vue.use(VueSocketio, 'http://101.200.54.33:8081')
+// Vue.use(VueSocketio, 'https://101.200.54.33:8081')
 // Vue.use(VueObserveVisibility)
 Vue.use(VueLazyload, {
     preLoad: 1,

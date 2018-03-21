@@ -1,9 +1,9 @@
 <template>
     <div class="mould">
-
+        {{isLogin}}
         <mu-toast v-if="toast" :message="message" @close="toast = false"/>
         <!-- 登录弹窗 -->
-        <mu-popup popupClass="login-popup" position="top" :overlay="true" :open="loginSwitch" @close="loginSwitch = false">
+        <mu-dialog popupClass="login-popup" position="top" :overlay="true" :open="loginSwitch" @close="loginSwitch = false">
             <!-- 登录 -->
             <div v-show="loginOrRegister==='login'">
                 <mu-text-field class="mobile" label="手机" labelFloat fullWidth v-model="mobile" :errorText="mobileErrorText" /><br/>
@@ -25,7 +25,7 @@
                     <mu-flat-button label="登录" class="demo-flat-button" @click="toLogin" secondary/>
                 </div>
             </div>
-        </mu-popup>
+        </mu-dialog>
 
         <!-- 新建站点弹窗 -->
         <mu-dialog :open="station.open" title="新建站点" @close="station.open = false">

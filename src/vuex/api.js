@@ -2,7 +2,7 @@ import axios from 'axios'
 import router from '../router/index'
 const querystring = require('querystring')
 
-let url = process.env.NODE_ENV !== 'production' ? '/api/' : 'http://101.200.54.33/api/'
+let url = process.env.NODE_ENV !== 'production' ? '/api/' : 'https://www.meijile.xin/api/'
 
 // http request 拦截器
 axios.interceptors.request.use(
@@ -242,6 +242,9 @@ export default {
     //         'password': password
     //     }), cb)
     // },
+    checkToken: () => {
+        return funcAxiosStrPro('post', url + 'checkToken')
+    },
     tologin: (data) => {
         return funcAxiosStrPro('post', url + 'login', {
             'mobile': data.mobile,

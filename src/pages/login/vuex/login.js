@@ -2,7 +2,6 @@ import api from '@/vuex/api'
 import * as type from '@/vuex/type'
 import router from '@/router/index'
 const state = {
-    isLogin: false,
     userName: localStorage.getItem('currentUser_name'),
     userToken: '',
     mobileErrorText: '',
@@ -10,6 +9,7 @@ const state = {
 }
 const actions = {
     tologin: function ({ commit }, data) {
+        console.log('login')
         if (data.mobile === '') {
             commit('SET_MOBILEERRORTEXT', { msg: '手机号不能为空' })
             commit('SET_PASSWORDERRORTEXT', { msg: '' })
@@ -38,6 +38,7 @@ const actions = {
                 api.tologin(data).then(res => {
                     if (res.success) {
                         commit(type.SET_TOKEN_NAME, { 'userName': res.body.data.userName, 'userToken': res.body.data.token })
+                        commit(type.SET_ISLOGIN, true)
                     } else {
                         commit('SET_MOBILEERRORTEXT', { msg: '' })
                         commit('SET_PASSWORDERRORTEXT', { msg: res.msg })
@@ -49,13 +50,9 @@ const actions = {
     },
     getLoginInfoFromLocal: function ({commit, state}) {
         state.userName = localStorage.getItem('currentUser_name')
-        if (localStorage.getItem('currentUser_token')) {
-            state.isLogin = true
-        }
     }
 }
 const getters = {
-    isLogin: (state) => state.isLogin,
     userName: (state) => state.userName,
     userToken: (state) => state.userToken,
     mobileErrorText: () => state.mobileErrorText,
@@ -67,7 +64,6 @@ const mutations = {
         localStorage.setItem('currentUser_token', userToken)
         state.userName = userName
         state.userToken = userToken
-        state.isLogin = true
     },
     [type.SET_MOBILEERRORTEXT]: (state, { msg }) => {
         state.mobileErrorText = msg
