@@ -12,6 +12,9 @@ const actions = {
     api.checkToken().then(res => {
       commit(type.SET_ISLOGIN, res.success)
     })
+  },
+  getIsLogin: ({commit, state}) => {
+      return state.isLogin
   }
 }
 const getters = {

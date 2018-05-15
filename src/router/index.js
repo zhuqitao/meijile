@@ -53,8 +53,7 @@ const router = new Router({
                     path: 'sysIndex',
                     component: sysIndex,
                     meta: {
-                        mainUrl: 'user',
-                        auth: true
+                        mainUrl: 'user'
                     },
                     children: [
                         // 系统管理
@@ -63,7 +62,8 @@ const router = new Router({
                             name: 'user',
                             component: User,
                             meta: {
-                                mainUrl: 'user'
+                                mainUrl: 'user',
+                                auth: true
                             }
                         },
                         {
@@ -71,7 +71,8 @@ const router = new Router({
                             name: 'role',
                             component: Role,
                             meta: {
-                                mainUrl: 'user'
+                                mainUrl: 'user',
+                                auth: true
                             }
                         },
                         {
@@ -79,7 +80,8 @@ const router = new Router({
                             name: 'menu',
                             component: Menu,
                             meta: {
-                                mainUrl: 'user'
+                                mainUrl: 'user',
+                                auth: true
                             }
                         },
                         {
@@ -87,7 +89,8 @@ const router = new Router({
                             name: 'log',
                             component: Log,
                             meta: {
-                                mainUrl: 'user'
+                                mainUrl: 'user',
+                                auth: true
                             }
                         },
                         // 站点管理
@@ -96,7 +99,8 @@ const router = new Router({
                             name: 'station',
                             component: Station,
                             meta: {
-                                mainUrl: 'station'
+                                mainUrl: 'station',
+                                auth: true
                             }
                         },
                         {
@@ -104,7 +108,8 @@ const router = new Router({
                             name: 'template',
                             component: Muban,
                             meta: {
-                                mainUrl: 'station'
+                                mainUrl: 'station',
+                                auth: true
                             }
                         },
                         {
@@ -112,13 +117,9 @@ const router = new Router({
                             name: 'sign',
                             component: Sign,
                             meta: {
-                                mainUrl: 'station'
+                                mainUrl: 'station',
+                                auth: true
                             }
-                        },
-                        {
-                            path: 'flow',
-                            name: 'flow',
-                            component: Station
                         }
                     ]
                 }
@@ -135,23 +136,22 @@ const router = new Router({
     ]
 })
 router.beforeEach((to, from, next) => {
-    console.log(store)
     router.app.$options.store.dispatch('loading', true)
-    // setTimeout(function () {
-    //     next()
-    // }, 1000)
-    if (to.matched.some(m => m.meta.auth)) {
-        console.log('auth')
-        console.log(store.getters.isLogin)
-        if (router.app.$options.store.getters.isLogin) {
-            console.log('isLogin')
-            next()
-        } else {
-            console.log('notLogin')
-            next({path: '/'})
-        }
-    } else {
+    if (to.path.includes('sysIndex') && from.path === '/') {
         next()
+    } else {
+        if (to.matched.some(m => m.meta.auth)) {
+            console.log('auth')
+            if (store.getters.isLogin) {
+                console.log('isLogin')
+                next()
+            } else {
+                console.log('notLogin')
+                next('/')
+            }
+        } else {
+            next()
+        }
     }
 })
 router.afterEach((to, from) => {
